@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .atom {
+      width: 100px;
+      height: 100px;
+      background-color: gray;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .electron {
+      width: 10px;
+      height: 10px;
+      background-color: blue;
+      border-radius: 50%;
+      position: absolute;
+      animation: electronOrbit 2s linear infinite;
+    }
+    @keyframes electronOrbit {
+      0% {
+        transform: rotate(0deg);
+        left: 90px;
+        top: 45px;
+      }
+      100% {
+        transform: rotate(360deg);
+        left: 90px;
+        top: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="atom" id="atom1"></div>
+  <div class="atom" id="atom2"></div>
+  <div class="electron"></div>
+  <div class="electron"></div>
+
+  <script>
+    // Get the atom elements
+    const atom1 = document.getElementById('atom1');
+    const atom2 = document.getElementById('atom2');
+    
+    // Set the initial positions of the atoms
+    atom1.style.left = '100px';
+    atom1.style.top = '100px';
+    atom2.style.left = '300px';
+    atom2.style.top = '100px';
+
+    // Create a function to bond the atoms
+    function bondAtoms() {
+      // Calculate the distance between the atoms
+      const distance = Math.sqrt(Math.pow(atom2.offsetLeft - atom1.offsetLeft, 2) + Math.pow(atom2.offsetTop - atom1.offsetTop, 2));
+      
+      // Create electrons and position them
+      const electron1 = document.createElement('div');
+      electron1.className = 'electron';
+      electron1.style.left = atom1.offsetLeft + 50 + 'px';
+      electron1.style.top = atom1.offsetTop + 50 + 'px';
+      
+      const electron2 = document.createElement('div');
+      electron2.className = 'electron';
+      electron2.style.left = atom2.offsetLeft + 50 + 'px';
+      electron2.style.top = atom2.offsetTop + 50 + 'px';
+      
+      // Add electrons to the document
+      document.body.appendChild(electron1);
+      document.body.appendChild(electron2);
+
+      // Move the electrons to simulate bonding
+      const electron1Move = setInterval(() => {
+        const electron1X = parseFloat(electron1.style.left);
+        const electron1Y = parseFloat(electron1.style.top);
+        const atom2X = atom2.offsetLeft + 50;
+        const atom2Y = atom2.offsetTop + 50;
+        const distanceX = atom2X - electron1X;
+        const distanceY = atom2Y - electron1Y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        const speed = 2;
+        const stepX = (distanceX / distance) * speed;
+        const stepY = (distanceY / distance) * speed;
+        electron1.style.left = electron1X + stepX + 'px';
+        electron1.style.top = electron1Y + stepY + 'px';
+        if (distance < 1) {
+          clearInterval(electron1Move);
+        }
+      }, 10);
+
+      const electron2Move = setInterval(() => {
+        const electron2X = parseFloat(electron2.style.left);
+        const electron2Y = parseFloat(electron2.style.top);
+        const atom1X = atom1.offsetLeft + 50;
+        const atom1Y = atom1.offsetTop + 50;
+        const distanceX = atom1X - electron2X;
+        const distanceY = atom1Y - electron2Y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        const speed = 2;
+        const stepX = (distanceX / distance) * speed;
+        const stepY = (distanceY / distance) * speed;
+        electron2.style.left = electron2X + stepX + 'px';
+        electron2.style.top = electron2Y + stepY + 'px';
+        if (distance < 1) {
+          clearInterval(electron2Move);
+        }
+      }, 10);
+    }
+
+    // Call the bondAtoms function to start the bonding process
+    bondAtoms();
+  </script>
+</body>
+</html>

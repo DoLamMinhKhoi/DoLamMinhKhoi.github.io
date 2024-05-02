@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="">
+    <title>Element Bonding Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url('https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/439433505_1151897942493493_6608195570316263446_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeH75-HhBjgPqt0m99CIz8-jlAzrs7Ea3zOUDOuzsRrfM5ncZdToH1Nc1BaG9YnTta7f7C5BbnV_36om0a5c-ccK&_nc_ohc=VP24_cgZmZ0Ab5Z6Qo_&_nc_ht=scontent.fsgn2-11.fna&oh=00_AfBw--LCSO1iQP50aOX5gvPsSXpcW5sMVFhPzBGN7FkLnQ&oe=66303F39');
+            background-size: cover; /* Đảm bảo hình nền phủ kín trang web */
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.5); 
+            z-index: -1; 
+        }
+
+        .button {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        .button1 {
+            background-color: #141817;
+        }
+        /* Green */
+        .button2 {
+            background-color: #008CBA;
+        }
+        /* Blue */
+        h1 {
+            color: red;
+            font-size: 36px;
+            text-align: left;
+            margin-top: 20px;
+        }
+        /*Màu cho tiêu đề*/
+
+        /* label {
+                size: 150%;
+            } */
+
+        /* h1 {
+
+            } */
+
+
+        .centered-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            height: 350px;
+        }
+
+        .atom1 {
+            border-radius: 50%;
+            float: right;
+            transform-origin: right;
+            overflow: hidden;
+        }
+
+        .atom2 {
+            border-radius: 50%;
+            float: left;
+            transform-origin: left;
+            overflow: hidden;
+        }
+
+        img {
+            max-width: 150px;
+            margin: 20px;
+            position: relative;
+            top: 0;
+            display: block;
+            vertical-align: middle;
+        }
+
+        .element-container {
+            position: relative;
+            display: inline-block;
+        }
+
+
+        .bond-type-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            height: 50px;
+        }
+
+        .bond-type {
+            font-family: 'Montserrat', sans-serif;
+            color: #000000; /* Màu chữ */
+            padding: 10px; /* Khoảng cách bên trong */
+            border: 3px solid; /* Viền trong suốt để gradient background hiển thị */
+            border-image-slice: 1;
+            border-radius: 5px; /* Viền tròn nhẹ */
+            display: inline-block; /* Để phần tử không chiếm toàn bộ chiều rộng */
+            text-align: center;
+        }
+
+        h1, label, input, button, p {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .flash.error {
+            font-family: 'Montserrat', sans-serif;
+            color: #FF0000;
+            background-color: #FFCCCC;
+            border: 1px solid #FF0000;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>ELEMENT BONDING</h1>
+    <h2>
+        <form method="post">
+            <label for="fElement"><strong>First element:</strong></label>
+            <input type="text" id="fElement" name="fElement">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <label for="sElement"><strong>Second element:</strong></label>
+            <input type="text" id="sElement" name="sElement">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="button button1">Element Bonding</button>
+        </form>
+    </h2>
+
+    <div class="bond-type-container">
+        <p class="bond-type" style="border: 3px solid {{ bond_color }}; color: {{ text_color }};">
+            {{ bond_type }}
+        </p>
+    </div>
+
+        <!-- Khu vực hiển thị flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="centered-content">
+        <div class="atom1" height="500px" width="500px" id="zoom1">
+            {% if first_imageE_data %}
+            <img src="{{ first_imageE_data }}" alt="First Element Electrons" />
+            {% endif %}
+        </div>
+        <div class="atom2" height="500px" width="500px" id="zoom2">
+            {% if second_imageE_data %}
+            <img src="{{ second_imageE_data }}" alt="Second Element Electrons" />
+            {% endif %}
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    var radius_1 = "{{first_element_radius}}"
+    var radius_2 = "{{second_element_radius}}"
+    var electronegativity_difference = "{{electronegativity_difference}}"
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const atom1 = document.getElementById('atom1');
+        const atom2 = document.getElementById('atom2');
+    
+        // Set initial positions of the atoms
+        atom1.style.position = 'absolute';
+        atom2.style.position = 'absolute';
+        atom1.style.left = '150px'; // Adjust as necessary
+        atom1.style.top = '150px';  // Adjust as necessary
+        atom2.style.left = '150px'; // Adjust as necessary
+        atom2.style.top = '150px';  // Adjust as necessary
+    
+        // Move the atoms closer to simulate bond formation
+        function moveAtoms() {
+            const atom1X = parseInt(atom1.style.left, 10);
+            const atom2X = parseInt(atom2.style.left, 10);
+        
+            if (atom1X < atom2X) {
+                atom1.style.left = (atom1X + 1) + 'px';
+                atom2.style.left = (atom2X - 1) + 'px';
+            } else {
+                nterval(intervalId);clearI
+            }
+        }
+    
+        // Start the movement animation
+        const intervalId = setInterval(moveAtoms, 10);
+    });
+
+    zoomAtom1 = document.getElementById("zoom1");
+    zoomAtom1.style.transform = "scale("+radius_1+")";
+    atom1Margin = -42.5 * radius_1;
+    zoomAtom1.style.marginRight = atom1Margin + "px";
+
+    zoomAtom2 = document.getElementById("zoom2");
+    zoomAtom2.style.transform = "scale("+radius_2+")";
+</script>
+</html>
